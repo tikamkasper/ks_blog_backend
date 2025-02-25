@@ -25,8 +25,6 @@ const blogRoutes = require("./routes/blogRoutes.js");
 app.use("/api/v1/users/", userRoutes);
 app.use("/api/v1/blogs/", blogRoutes);
 
-// http://localhost:8000/api/v1/user/register
-
 //Global error middleware
 app.use(globalErrorMiddleware);
 

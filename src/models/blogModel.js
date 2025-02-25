@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 
 const blogSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
     title: {
       type: String,
       trim: true,
@@ -60,8 +56,19 @@ const blogSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
-  },
-  { timestamps: true }
+    createrUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    updaterUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    createdAt: { type: String, default: new Date() },
+    updatedAt: { type: String, default: new Date() },
+  }
+  // { timestamps: true }
 );
 
 const Blog = mongoose.model("Blog", blogSchema);

@@ -1,1 +1,1 @@
-# K_SHOP Backend
+# KS_Blog Backend

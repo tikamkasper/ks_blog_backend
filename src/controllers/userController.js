@@ -1,12 +1,17 @@
 const { User } = require("../models/userModel.js");
+const { asyncHandler } = require("../utils/asyncHandler.js");
 const { CustomError } = require("../utils/CustomError.js");
 const { Response } = require("../utils/Response.js");
-const { asyncHandler } = require("../utils/asyncHandler.js");
+const { REFRESH_TOKEN_SECRET, REFRESH_TOKEN_EXPIRY } = require("../config");
+const {
+  generateRefreshToken,
+  verifyToken,
+} = require("../helpers/jwtTokenGenerator.js");
 
-//register user
-const registerUser = asyncHandler(async (req, res, next) => {
+//register user+login
+exports.registerUser = asyncHandler(async (req, res, next) => {
   // get email from req.body
-  const { email } = req.body;
+  const { email, role = "user" } = req.body;
   // check if email is provided or not
   if (!email) {
     return next(
@@ -35,16 +40,39 @@ const registerUser = asyncHandler(async (req, res, next) => {
   const userExists = await User.findOne({ email });
 
   if (userExists) {
+    // check user token
+    const token = req.cookies?.b_rt;
+    const isValid = verifyToken(
+      token,
+      REFRESH_TOKEN_SECRET,
+      REFRESH_TOKEN_EXPIRY
+    );
+
+    if (!token || !isValid) {
+      // generate refreshToken
+      const refreshToken = await generateRefreshToken(userExists._id);
+      // set refresh token in cookie
+      res.cookie("rt", refreshToken, { httpOnly: true, secure: true });
+      // return response
+      return Response.success({
+        res,
+        statusCode: 201,
+        message: "Please continue ...",
+        data: { user: userExists },
+      });
+    }
+
     // return response
     return Response.success({
       res,
       statusCode: 200,
       message: "Please continue ...",
-      userExists,
+      data: { user: userExists },
     });
   }
+
   // create new user in db
-  const newUser = new User({ email });
+  const newUser = new User({ email, role });
 
   const user = await newUser.save();
 
@@ -60,6 +88,13 @@ const registerUser = asyncHandler(async (req, res, next) => {
       })
     );
   }
+
+  // generate refreshToken
+  const refreshToken = await generateRefreshToken(user._id);
+
+  // set refresh token in cookie
+  res.cookie("rt", refreshToken, { httpOnly: true, secure: true });
+
   // return response
   return Response.success({
     res,
@@ -68,4 +103,28 @@ const registerUser = asyncHandler(async (req, res, next) => {
     data: { createdUser },
   });
 });
-module.exports = { registerUser };
+
+// logout user
+exports.logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $unset: {
+        refresh_token: 1, // this removes the field from document
+      },
+    },
+    {
+      new: true,
+    }
+  );
+  // delete refresh token from cookie
+  res.clearCookie("rt", { httpOnly: true, secure: true });
+
+  // return response
+  return Response.success({
+    res,
+    statusCode: 200,
+    message: "Logged out successfully.",
+    data: {},
+  });
+});

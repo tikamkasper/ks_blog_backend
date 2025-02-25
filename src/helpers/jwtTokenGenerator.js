@@ -1,14 +1,13 @@
-const { Customer } = require("../models/customer/customerModel.js");
+const jwt = require("jsonwebtoken");
+const { User } = require("../models/userModel.js");
 const { CustomError } = require("../utils/CustomError.js");
-
 //Generate Refresh Token
-const generateRefreshToken = async (customerId) => {
+const generateRefreshToken = async (userId) => {
   try {
-    const customer = await Customer.findById(customerId);
-    const refreshToken = customer.generateRefreshToken();
-
-    customer.refresh_token = refreshToken;
-    await customer.save({ validateBeforeSave: false });
+    const user = await User.findById(userId);
+    const refreshToken = user.generateRefreshToken();
+    user.refresh_token = refreshToken;
+    await user.save({ validateBeforeSave: false });
     return refreshToken;
   } catch (error) {
     throw new CustomError({
@@ -19,4 +18,13 @@ const generateRefreshToken = async (customerId) => {
   }
 };
 
-module.exports = { generateRefreshToken };
+const verifyToken = (token, secret, expire) => {
+  try {
+    jwt.verify(token, secret, expire);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+module.exports = { generateRefreshToken, verifyToken };
