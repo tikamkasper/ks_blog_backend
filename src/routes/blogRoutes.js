@@ -15,12 +15,23 @@ const {
 
 const router = express.Router();
 
-router.route("/create").post(verifyJWT, upload.single("image"), createBlog);
+router
+  .route("/create")
+  .post(
+    verifyJWT,
+    authorizeRoles("user", "admin"),
+    upload.single("image"),
+    createBlog
+  );
+
 router.route("/get").get(getAllBlogs);
+
 router
   .route("/getAdimn")
   .get(verifyJWT, authorizeRoles("admin"), getAllBlogsAdmin);
+
 router.route("/get/:id").get(getBlogById);
+
 router
   .route("/delete/:id")
   .delete(verifyJWT, authorizeRoles("admin"), deleteBlogAdimn);

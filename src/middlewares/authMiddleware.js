@@ -13,7 +13,7 @@ exports.verifyJWT = asyncHandler(async (req, _, next) => {
     if (!token) {
       return next(
         new CustomError({
-          userMessage: "Email is requried. Please provide a valid email.",
+          userMessage: "Please login to access this resource",
           devMessage: "User have no token.",
           statusCode: 401,
         })
