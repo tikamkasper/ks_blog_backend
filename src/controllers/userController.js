@@ -132,7 +132,6 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
 // login user
 exports.loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log("in back", { email, password });
   const user = await User.findOne({ email }).select("+password -__v");
   if (!user) {
     return next(
@@ -172,6 +171,7 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
 
 // logout user
 exports.logoutUser = asyncHandler(async (req, res) => {
+  console.log("call in logout controller");
   await User.findByIdAndUpdate(
     req.user._id,
     {
