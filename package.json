@@ -1,7 +1,7 @@
 {
-  "name": "ks_backend",
+  "name": "ks_blog",
   "version": "1.0.0",
-  "description": "This is the backend of K_SHOP.",
+  "description": "This is the backend of KS_Blogs.",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -24,12 +24,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.10.0",
-    "twilio": "^5.4.3"
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.9",

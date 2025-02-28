@@ -132,7 +132,8 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
 // login user
 exports.loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }).select("+password");
+  console.log("in back", { email, password });
+  const user = await User.findOne({ email }).select("+password -__v");
   if (!user) {
     return next(
       new CustomError({
@@ -157,13 +158,15 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
 
   // set refresh token in cookie
   res.cookie("rt", refreshToken, { httpOnly: true, secure: true });
-
+  // Convert Mongoose document to plain object and remove password
+  const userObj = user.toObject();
+  delete userObj.password;
   // return response
   return Response.success({
     res,
     statusCode: 200,
-    message: "User logged in successfully",
-    data: { user },
+    message: "User logged in successfully.",
+    data: { user: userObj },
   });
 });
 
