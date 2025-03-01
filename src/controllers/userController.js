@@ -171,7 +171,6 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
 
 // logout user
 exports.logoutUser = asyncHandler(async (req, res) => {
-  console.log("call in logout controller");
   await User.findByIdAndUpdate(
     req.user._id,
     {
