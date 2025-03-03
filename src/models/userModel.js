@@ -51,10 +51,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
-    createdAt: { type: String, default: new Date() },
-    updatedAt: { type: String, default: new Date() },
-  }
-  // { timestamps: true }
+    // createdAt: { type: String, default: new Date() },
+    // updatedAt: { type: String, default: new Date() },
+  },
+  { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {

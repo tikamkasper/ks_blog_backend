@@ -205,3 +205,16 @@ exports.profileUser = asyncHandler(async (req, res) => {
     data: { user },
   });
 });
+
+// get all users
+exports.getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find();
+  const usersCount = users.length;
+  // return response
+  return Response.success({
+    res,
+    statusCode: 200,
+    message: " All users retrieved successfully.",
+    data: { usersCount, users },
+  });
+});
