@@ -7,41 +7,36 @@ const {
 const {
   createBlog,
   getAllBlogs,
+  getVerifiedBlogs,
+
   getBlogById,
-  getAllBlogsAdmin,
-  deleteBlogAdimn,
-  updateBlogAdmin,
+  deleteBlogById,
+  updatedBlogById,
 } = require("../controllers/blogController.js");
 
 const router = express.Router();
 
 router
-  .route("/create")
+  .route("/")
   .post(
     verifyJWT,
     authorizeRoles("user", "admin"),
     upload.single("image"),
     createBlog
   );
+router.route("/").get(verifyJWT, authorizeRoles("user", "admin"), getAllBlogs);
+router.route("/verified").get(getVerifiedBlogs);
 
-router.route("/get").get(getAllBlogs);
+router.route("/:id").get(getBlogById);
 
+router.route("/:id").delete(verifyJWT, authorizeRoles("admin"), deleteBlogById);
 router
-  .route("/getAdimn")
-  .get(verifyJWT, authorizeRoles("admin"), getAllBlogsAdmin);
-
-router.route("/get/:id").get(getBlogById);
-
-router
-  .route("/delete/:id")
-  .delete(verifyJWT, authorizeRoles("admin"), deleteBlogAdimn);
-router
-  .route("/update/:id")
+  .route("/:id")
   .put(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("user", "admin"),
     upload.single("image"),
-    updateBlogAdmin
+    updatedBlogById
   );
 
 module.exports = router;

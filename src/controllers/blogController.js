@@ -5,7 +5,7 @@ const { CustomError } = require("../utils/CustomError.js");
 const { Response } = require("../utils/Response.js");
 const { uploadToCloudinary } = require("../utils/cloudinary.js");
 
-// Create a new blog ==>user
+// Create new blog ==> admin and  user
 exports.createBlog = asyncHandler(async (req, res, next) => {
   const { filename, path } = req.file;
   const cloudinaryResponse = await uploadToCloudinary(filename, path, next);
@@ -26,8 +26,8 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Get all blogs ==>user
-exports.getAllBlogs = asyncHandler(async (req, res, next) => {
+// Get Verified Blogs ==> gustUser
+exports.getVerifiedBlogs = asyncHandler(async (req, res, next) => {
   const blogs = await Blog.find({ isVerified: true }).populate("createrUserId");
   const blogCounts = blogs.length;
 
@@ -39,8 +39,8 @@ exports.getAllBlogs = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Get all blogs ==> admin
-exports.getAllBlogsAdmin = asyncHandler(async (req, res, next) => {
+// Get all blogs ==> admin and user
+exports.getAllBlogs = asyncHandler(async (req, res, next) => {
   // const blogContents = await Blog.countDocuments();
   const blogs = await Blog.find().populate("createrUserId");
   const blogCounts = blogs.length;
@@ -53,7 +53,7 @@ exports.getAllBlogsAdmin = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Get a blog by id or Get a single blog ==>user
+// Get a blog by id ==> admin, user and guestUser
 exports.getBlogById = asyncHandler(async (req, res, next) => {
   const blogId = req.params.id;
   const blog = await Blog.findById(blogId).populate("createrUserId");
@@ -74,8 +74,8 @@ exports.getBlogById = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Delete a blog ===>admin
-exports.deleteBlogAdimn = asyncHandler(async (req, res, next) => {
+// Delete a blog ===> admin
+exports.deleteBlogById = asyncHandler(async (req, res, next) => {
   // Find blog by id
   const blog = await Blog.findById(req.params.id);
 
@@ -99,12 +99,12 @@ exports.deleteBlogAdimn = asyncHandler(async (req, res, next) => {
   return Response.success({
     res,
     statusCode: 200,
-    message: "Blog deleted successfully",
+    message: "Blog deleted successfully.",
   });
 });
 
-// Update a blog ===>admin
-exports.updateBlogAdmin = asyncHandler(async (req, res, next) => {
+// Update a blog ===> admin and user
+exports.updatedBlogById = asyncHandler(async (req, res, next) => {
   // Find blog by id
   const blog = await Blog.findById(req.params.id);
   if (!blog) {

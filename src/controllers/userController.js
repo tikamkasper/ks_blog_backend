@@ -8,8 +8,8 @@ const {
   verifyToken,
 } = require("../helpers/jwtTokenGenerator.js");
 
-//register user
-exports.registerUser = asyncHandler(async (req, res, next) => {
+// create a new user ==> admin only
+exports.createUser = asyncHandler(async (req, res, next) => {
   // get email from req.body
   const { fullName, email, password, confirmPassword } = req.body;
 
@@ -206,7 +206,7 @@ exports.profileUser = asyncHandler(async (req, res) => {
   });
 });
 
-// get all users
+// get all users ==> admin only
 exports.getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find();
   const usersCount = users.length;

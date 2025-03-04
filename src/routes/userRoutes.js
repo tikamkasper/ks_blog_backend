@@ -5,20 +5,20 @@ const {
 } = require("../middlewares/authMiddleware.js");
 
 const {
-  registerUser,
+  loginUser,
   logoutUser,
   profileUser,
-  loginUser,
+  createUser,
   getAllUsers,
 } = require("../controllers/userController.js");
 
 const router = express.Router();
 
-router
-  .route("/register")
-  .post(verifyJWT, authorizeRoles("admin"), registerUser);
-router.route("/get").get(verifyJWT, authorizeRoles("admin"), getAllUsers);
 router.route("/login").post(loginUser);
-router.route("/me").get(verifyJWT, profileUser);
 router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/me").get(verifyJWT, profileUser);
+
+router.route("/").post(verifyJWT, authorizeRoles("admin"), createUser);
+router.route("/").get(verifyJWT, authorizeRoles("admin"), getAllUsers);
+
 module.exports = router;
