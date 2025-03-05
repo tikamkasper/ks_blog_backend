@@ -20,10 +20,12 @@ require("./utils/cloudinary.js");
 // Routes import
 const userRoutes = require("./routes/userRoutes.js");
 const blogRoutes = require("./routes/blogRoutes.js");
+const commentRoutes = require("./routes/commentRoutes.js");
 
 //Routes declaration
 app.use("/api/v1/users/", userRoutes);
 app.use("/api/v1/blogs/", blogRoutes);
+app.use("/api/v1/comments/", commentRoutes);
 
 //Global error middleware
 app.use(globalErrorMiddleware);

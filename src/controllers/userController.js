@@ -12,8 +12,7 @@ const {
 exports.createUser = asyncHandler(async (req, res, next) => {
   // get email from req.body
   const { fullName, email, password, confirmPassword } = req.body;
-
-  // check if email is provided or not
+  // check all fields are provided
   if (!fullName || !email || !password || !confirmPassword) {
     return next(
       new CustomError({
@@ -23,6 +22,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     );
   }
 
+  // check if password and confirmPassword are equal
   if (password !== confirmPassword) {
     return next(
       new CustomError({

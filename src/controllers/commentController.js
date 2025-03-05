@@ -1,45 +1,76 @@
 const { Comment } = require("../models/commentModel.js");
+const { GustUser } = require("../models/gustUserModel.js");
+const { Blog } = require("../models/blogModel.js");
 const { asyncHandler } = require("../utils/asyncHandler.js");
 const { CustomError } = require("../utils/CustomError.js");
 const { Response } = require("../utils/Response.js");
 
-// Create new comment or update the comment
+// Create new comment
 exports.createComment = asyncHandler(async (req, res, next) => {
-  const { commentContent } = req.body;
-  const comment = new Comment({ commentContent, createrUserId: req.user.id });
-  const review = {
-    userId: req.user._id,
-    name: req.user.name,
-    rating: Number(rating),
-    comment,
-  };
+  const { email, commentContent, blogId } = req.body;
 
-  const product = await Product.findById(productId);
-  const isReviewed = product.reviews.find(
-    (rev) => rev.userId.toString() === req.user._id.toString()
-  );
-
-  if (isReviewed) {
-    product.reviews.forEach((rev) => {
-      if (rev.userId.toString() === req.user._id.toString())
-        (rev.rating = rating), (rev.comment = comment);
-    });
-  } else {
-    product.reviews.push(review);
-    product.numOfReviews = product.reviews.length;
+  // check if email is provided or not
+  if (!email) {
+    return next(
+      new CustomError({
+        userErrorMessage: " Email is required.",
+        statusCode: 400,
+      })
+    );
   }
+  // check if email is valid or not
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const isEmail = emailRegex.test(email);
+  if (!isEmail) {
+    return next(
+      new CustomError({
+        userMessage: "Please provide a valid email.",
+        devMessage: `User enter invalide email format: ${email}`,
+        statusCode: 400,
+      })
+    );
+  }
+  // Check if the gustUser already exists in db or not with the same email.
+  const userExists = await GustUser.findOne({ email });
+  if (userExists) {
+    // If user exists then create a new comment
+    const newComment = await Comment.create({
+      createrUserId: userExists._id,
+      commentContent,
+      blogId,
+    });
 
-  let avg = 0;
+    // add comment id to the blog
+    await Blog.findByIdAndUpdate(blogId, {
+      $push: { comments: newComment._id },
+    });
 
-  product.reviews.forEach((rev) => {
-    avg += rev.rating;
+    // return response
+    return Response.success({
+      res,
+      statusCode: 201,
+      message: " Comment created successfully.",
+      data: { newComment },
+    });
+  }
+  // If user does not exist then create a new user and then create a new comment
+  const newGustUser = await GustUser.create({ email });
+  const newComment = await Comment.create({
+    createrUserId: newGustUser._id,
+    commentContent,
+    blogId,
   });
 
-  product.ratings = avg / product.reviews.length;
+  // add comment id to the blog
+  await Blog.findByIdAndUpdate(blogId, {
+    $push: { comments: newComment._id },
+  });
 
-  await product.save({ validateBeforeSave: false });
-
-  res.status(200).json({
-    success: true,
+  // return response
+  return Response.success({
+    res,
+    statusCode: 201,
+    message: " Comment created successfully.",
+    data: { newComment },
   });
 });

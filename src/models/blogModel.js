@@ -65,10 +65,8 @@ const blogSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    createdAt: { type: String, default: new Date() },
-    updatedAt: { type: String, default: new Date() },
-  }
-  // { timestamps: true }
+  },
+  { timestamps: true }
 );
 
 const Blog = mongoose.model("Blog", blogSchema);

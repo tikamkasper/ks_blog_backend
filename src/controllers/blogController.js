@@ -28,7 +28,9 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
 
 // Get Verified Blogs ==> gustUser
 exports.getVerifiedBlogs = asyncHandler(async (req, res, next) => {
-  const blogs = await Blog.find({ isVerified: true }).populate("createrUserId");
+  const blogs = await Blog.find({ isVerified: true })
+    .populate("createrUserId")
+    .populate("comments");
   const blogCounts = blogs.length;
 
   return Response.success({
@@ -42,7 +44,9 @@ exports.getVerifiedBlogs = asyncHandler(async (req, res, next) => {
 // Get all blogs ==> admin and user
 exports.getAllBlogs = asyncHandler(async (req, res, next) => {
   // const blogContents = await Blog.countDocuments();
-  const blogs = await Blog.find().populate("createrUserId");
+  const blogs = await Blog.find()
+    .populate("createrUserId")
+    .populate("comments");
   const blogCounts = blogs.length;
 
   return Response.success({
